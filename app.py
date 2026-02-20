@@ -4,11 +4,12 @@ from pathlib import Path
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import APIC, COMM, ID3, ID3NoHeaderError, WOAS
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QColor, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
     QFormLayout,
+    QGraphicsDropShadowEffect,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -51,38 +52,64 @@ class Mp3MetaEditor(QMainWindow):
         self.cover_mime = "image/jpeg"
         self.cover_label = QLabel("No cover")
         self.cover_info_label = QLabel("")
+        self.logo_label = QLabel()
 
         self._build_ui()
+        self._apply_styles()
+        self._load_logo()
 
     def _build_ui(self):
         root = QWidget()
+        root.setObjectName("root")
         self.setCentralWidget(root)
-
         main_layout = QVBoxLayout(root)
+        main_layout.setContentsMargins(18, 18, 18, 18)
+        main_layout.setSpacing(14)
 
-        toolbar_layout = QHBoxLayout()
+        toolbar_card = QWidget()
+        toolbar_card.setObjectName("glassCard")
+        toolbar_layout = QHBoxLayout(toolbar_card)
+        toolbar_layout.setContentsMargins(12, 10, 12, 10)
+        toolbar_layout.setSpacing(10)
+
         open_btn = QPushButton("Open MP3")
         save_btn = QPushButton("Save Tags")
+        open_btn.setProperty("variant", "primary")
+        save_btn.setProperty("variant", "primary")
 
         open_btn.clicked.connect(self.open_file)
         save_btn.clicked.connect(self.save_tags)
 
         self.file_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.file_label.setObjectName("fileLabel")
+
+        self.logo_label.setObjectName("logoLabel")
+        self.logo_label.setAlignment(Qt.AlignCenter)
+        self.logo_label.setFixedHeight(72)
+        main_layout.addWidget(self.logo_label)
 
         toolbar_layout.addWidget(open_btn)
         toolbar_layout.addWidget(save_btn)
         toolbar_layout.addWidget(self.file_label, 1)
 
-        main_layout.addLayout(toolbar_layout)
+        main_layout.addWidget(toolbar_card)
 
         splitter = QSplitter(Qt.Horizontal)
+        splitter.setHandleWidth(12)
         main_layout.addWidget(splitter, 1)
 
         left_widget = QWidget()
+        left_widget.setObjectName("glassCard")
         left_layout = QVBoxLayout(left_widget)
-        left_layout.addWidget(QLabel("Editable tags"))
+        left_layout.setContentsMargins(14, 14, 14, 14)
+        left_layout.setSpacing(10)
+        form_title = QLabel("Editable tags")
+        form_title.setObjectName("sectionTitle")
+        left_layout.addWidget(form_title)
 
         form = QFormLayout()
+        form.setHorizontalSpacing(16)
+        form.setVerticalSpacing(8)
         form.setLabelAlignment(Qt.AlignLeft)
 
         for key, label in EDITABLE_FIELDS:
@@ -96,31 +123,194 @@ class Mp3MetaEditor(QMainWindow):
         left_layout.addLayout(form)
         self.cover_label.setFixedSize(220, 220)
         self.cover_label.setAlignment(Qt.AlignCenter)
-        self.cover_label.setStyleSheet("border: 1px solid #777;")
-        left_layout.addWidget(QLabel("Cover"))
+        self.cover_label.setObjectName("coverPreview")
+        cover_title = QLabel("Cover")
+        cover_title.setObjectName("sectionTitle")
+        left_layout.addWidget(cover_title)
         left_layout.addWidget(self.cover_label, alignment=Qt.AlignLeft)
 
         cover_actions = QHBoxLayout()
+        cover_actions.setSpacing(8)
         replace_cover_btn = QPushButton("Replace Cover")
         remove_cover_btn = QPushButton("Remove Cover")
+        replace_cover_btn.setProperty("variant", "ghost")
+        remove_cover_btn.setProperty("variant", "ghost")
         replace_cover_btn.clicked.connect(self.replace_cover)
         remove_cover_btn.clicked.connect(self.remove_cover)
         cover_actions.addWidget(replace_cover_btn)
         cover_actions.addWidget(remove_cover_btn)
         left_layout.addLayout(cover_actions)
+        self.cover_info_label.setObjectName("hintLabel")
         left_layout.addWidget(self.cover_info_label)
         left_layout.addStretch(1)
 
         right_widget = QWidget()
+        right_widget.setObjectName("glassCard")
         right_layout = QVBoxLayout(right_widget)
-        right_layout.addWidget(QLabel("All metadata (raw)"))
+        right_layout.setContentsMargins(14, 14, 14, 14)
+        right_layout.setSpacing(10)
+        raw_title = QLabel("All metadata (raw)")
+        raw_title.setObjectName("sectionTitle")
+        right_layout.addWidget(raw_title)
 
         self.raw_text.setReadOnly(True)
+        self.raw_text.setObjectName("rawText")
         right_layout.addWidget(self.raw_text, 1)
 
         splitter.addWidget(left_widget)
         splitter.addWidget(right_widget)
         splitter.setSizes([380, 640])
+        self._add_blur_effect(toolbar_card)
+        self._add_blur_effect(left_widget)
+        self._add_blur_effect(right_widget)
+
+    def _add_blur_effect(self, widget: QWidget):
+        effect = QGraphicsDropShadowEffect(self)
+        effect.setBlurRadius(48)
+        effect.setOffset(0, 0)
+        effect.setColor(QColor(28, 42, 66, 210))
+        widget.setGraphicsEffect(effect)
+
+    def _apply_styles(self):
+        self.setStyleSheet(
+            """
+            #logoLabel {
+                background: transparent;
+            }
+            QMainWindow {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(8, 11, 18, 255),
+                    stop:0.45 rgba(11, 15, 23, 255),
+                    stop:1 rgba(6, 8, 14, 255)
+                );
+            }
+            #root {
+                background: rgba(8, 11, 18, 255);
+            }
+            #glassCard {
+                background: rgba(255, 255, 255, 20);
+                border-radius: 18px;
+            }
+            QLabel {
+                color: rgba(241, 247, 255, 230);
+                font-size: 13px;
+            }
+            #sectionTitle {
+                color: rgba(255, 255, 255, 245);
+                font-size: 18px;
+                font-weight: 700;
+            }
+            #fileLabel {
+                color: rgba(229, 239, 255, 240);
+                font-size: 12px;
+                background: rgba(255, 255, 255, 24);
+                border-radius: 12px;
+                padding: 7px 10px;
+            }
+            QLineEdit, QPlainTextEdit {
+                background: rgba(255, 255, 255, 20);
+                border: none;
+                border-radius: 11px;
+                padding: 7px 10px;
+                color: rgba(255, 255, 255, 245);
+                selection-background-color: rgba(112, 174, 255, 180);
+            }
+            QLineEdit:focus, QPlainTextEdit:focus {
+                background: rgba(255, 255, 255, 28);
+            }
+            QLineEdit::placeholder, QPlainTextEdit::placeholder {
+                color: rgba(224, 235, 255, 150);
+            }
+            QPushButton {
+                border-radius: 11px;
+                border: none;
+                color: rgba(248, 252, 255, 250);
+                padding: 8px 14px;
+                font-weight: 600;
+            }
+            QPushButton[variant="primary"] {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(81, 182, 255, 220),
+                    stop:1 rgba(37, 128, 224, 230)
+                );
+            }
+            QPushButton[variant="primary"]:hover {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:1,
+                    stop:0 rgba(101, 196, 255, 235),
+                    stop:1 rgba(55, 143, 235, 235)
+                );
+            }
+            QPushButton[variant="ghost"] {
+                background: rgba(255, 255, 255, 20);
+            }
+            QPushButton[variant="ghost"]:hover {
+                background: rgba(255, 255, 255, 28);
+            }
+            #coverPreview {
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 24);
+                color: rgba(234, 244, 255, 220);
+                font-size: 14px;
+            }
+            #hintLabel {
+                color: rgba(222, 234, 252, 185);
+                font-size: 12px;
+            }
+            QSplitter::handle {
+                background: rgba(255, 255, 255, 20);
+                border-radius: 5px;
+                margin: 6px 0;
+            }
+            QScrollBar:vertical {
+                background: transparent;
+                width: 12px;
+                margin: 4px;
+            }
+            QScrollBar::handle:vertical {
+                background: rgba(255, 255, 255, 90);
+                min-height: 22px;
+                border-radius: 6px;
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                height: 0px;
+            }
+            """
+        )
+
+    def _resource_path(self, name: str) -> Path:
+        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+            base = Path(getattr(sys, "_MEIPASS"))
+            candidates = [
+                base / name,
+                base / "Resources" / name,
+                base / "Frameworks" / name,
+                base.parent / "Resources" / name,
+                base.parent / "Frameworks" / name,
+            ]
+            for candidate in candidates:
+                if candidate.exists():
+                    return candidate
+            return candidates[0]
+        return Path(__file__).resolve().parent / name
+
+    def _load_logo(self):
+        logo_path = self._resource_path("logo.png")
+        if not logo_path.exists():
+            self.logo_label.clear()
+            return
+        pixmap = QPixmap(str(logo_path))
+        if pixmap.isNull():
+            self.logo_label.clear()
+            return
+        self.logo_label.setPixmap(
+            pixmap.scaledToHeight(
+                58,
+                Qt.SmoothTransformation,
+            )
+        )
 
     def open_file(self):
         path, _ = QFileDialog.getOpenFileName(self, "Select MP3 file", "", "MP3 files (*.mp3)")

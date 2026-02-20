@@ -390,11 +390,15 @@
 		</data>
 		<key>Resources/base_library.zip</key>
 		<data>
-		+RuEy3kijFO0kG92YVGEImNUI3U=
+		Sz21MMlXfcqpdkR8olnuC234w9k=
 		</data>
 		<key>Resources/icon-windowed.icns</key>
 		<data>
 		eEHOuYpZLB0vKGVIWGZOh5rH8+o=
+		</data>
+		<key>Resources/logo.png</key>
+		<data>
+		C6RQFtQsS6DAucpoGGfWs+kM6H8=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -903,6 +907,11 @@
 		<dict>
 			<key>symlink</key>
 			<string>shiboken6/libshiboken6.abi3.6.10.dylib</string>
+		</dict>
+		<key>Frameworks/logo.png</key>
+		<dict>
+			<key>symlink</key>
+			<string>../Resources/logo.png</string>
 		</dict>
 		<key>Frameworks/python3.9</key>
 		<dict>
@@ -2061,7 +2070,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			dRr7Gxoh/YepEJKYiAvD0twxaz4Z59nCsECzchHnw1k=
+			Ye9/oV2FNTdeDRwmyBbY12EotkA+Ib5fGA7Q+3G0zMI=
 			</data>
 		</dict>
 		<key>Resources/icon-windowed.icns</key>
@@ -2080,6 +2089,13 @@
 		<dict>
 			<key>symlink</key>
 			<string>shiboken6/libshiboken6.abi3.6.10.dylib</string>
+		</dict>
+		<key>Resources/logo.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			lep5s8yoUCfXpXl0bq1u4HgI4b6ybUHqc26foW7MiW4=
+			</data>
 		</dict>
 		<key>Resources/python3.9</key>
 		<dict>

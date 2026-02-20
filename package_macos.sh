@@ -11,6 +11,7 @@ pip install -r requirements-dev.txt
 PYINSTALLER_CONFIG_DIR=".pyinstaller" pyinstaller \
   --noconfirm \
   --windowed \
+  --add-data "logo.png:." \
   --name "MP3 Meta Editor" \
   app.py
 
