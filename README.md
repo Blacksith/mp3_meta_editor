@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.png" alt="MP3 Meta Editor Logo" width="180" />
+  <img src="./logo.png" alt="MP3 Meta Editor Logo"/>
 </p>
 
 # MP3 Meta Editor
