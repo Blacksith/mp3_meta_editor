@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./logo.png" alt="MP3 Meta Editor Logo" width="180" />
+</p>
+
 # MP3 Meta Editor
 
 Невеликий desktop-застосунок для редагування ID3 метаданих MP3.
