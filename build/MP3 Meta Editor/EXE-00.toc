@@ -57,7 +57,7 @@
  [],
  False,
  False,
- 1771583430,
+ 1771592739,
  [('runw',
    '/Users/blacksith/Desktop/mp3 meta '
    'editor/.venv/lib/python3.9/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',

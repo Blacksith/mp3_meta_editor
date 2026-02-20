@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QPlainTextEdit,
+    QScrollArea,
     QSplitter,
     QVBoxLayout,
     QWidget,
@@ -144,6 +145,13 @@ class Mp3MetaEditor(QMainWindow):
         left_layout.addWidget(self.cover_info_label)
         left_layout.addStretch(1)
 
+        # Keep form usable in small window sizes: scroll instead of squeezing controls.
+        left_scroll = QScrollArea()
+        left_scroll.setWidgetResizable(True)
+        left_scroll.setFrameShape(QScrollArea.NoFrame)
+        left_scroll.setWidget(left_widget)
+        left_scroll.setMinimumWidth(360)
+
         right_widget = QWidget()
         right_widget.setObjectName("glassCard")
         right_layout = QVBoxLayout(right_widget)
@@ -157,7 +165,7 @@ class Mp3MetaEditor(QMainWindow):
         self.raw_text.setObjectName("rawText")
         right_layout.addWidget(self.raw_text, 1)
 
-        splitter.addWidget(left_widget)
+        splitter.addWidget(left_scroll)
         splitter.addWidget(right_widget)
         splitter.setSizes([380, 640])
         self._add_blur_effect(toolbar_card)
